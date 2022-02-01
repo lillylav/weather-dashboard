@@ -14,11 +14,11 @@
     </header>
     <main class="columns is-mobile">
         <div class="column is-one-quarter-tablet" id="search-column">
-            <div class="field is-grouped-centered" id="search-form">
+            <form class="field is-grouped-centered" id="search-form">
                 <label for="city" class="block">Search for a City:</label>
-                <input type="search" name="city" placeholder="City" id="city" class="input block" />
-                <button type="submit" class="button is-fullwidth is-info block">Search</button>
-            </div>
+                <input type="text" name="city" placeholder="City, State, Country" id="city" class="input block" autofocus="true" />
+                <button type="submit" class="button is-fullwidth is-info block" id="search">Search</button>
+            </form>
             <div class="" id="search-history">
 
             </div>
