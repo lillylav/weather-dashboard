@@ -90,7 +90,6 @@ var getWeatherData = function(cityDetails) {
         // if response successful
         if (response.ok) {
             response.json().then(function(data) {
-                console.log(data);
                 displayCurrentInfo(data);
                 displayForecast(data);
             });
@@ -118,7 +117,7 @@ var displayCityDate = function() {
     displayCurrentEl.appendChild(currentHeaderEl);
     
     // get today's date and define format using moment.js
-    var dateToday = moment().format("DD/MM/YYYY");
+    var dateToday = moment().format("MM/DD/YYYY");
 
     // create span element for date
     var displayDate = document.createElement("span");
@@ -264,31 +263,42 @@ var saveSearch = function(input) {
   
         localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
     }
+
+    displaySearches();
 };
 
-// // display array from local storage
-// var displaySearches = function() {
-//     // if there are no searches, set tasks to an empty array and return out of the function
-//     if (!recentSearches) {
-//         return false;
-//     } else {
-//     // add container
-//     var recentSearchesListEl = document.createElement("div");
-//     recentSearchesListEl.setAttribute("id", "item");
-//     }
+// display array from local storage
+var displaySearches = function() {
+    // if there are no searches, set tasks to an empty array and return out of the function
+    if (!recentSearches) {
+        return false;
+    } else {
+        // add container
+        var recentSearchesListEl = document.createElement("div");
+        recentSearchesListEl.setAttribute("id", "item");
+    }
 
-//     // loop through savedSearches array
-//     for (var i = 0; i < recentSearches.length; i++) {    
-//       //pass each task object into the html ul section
-//       var search = document.createElement("button");
-//       search.setAttribute("value", recentSearches[i]);
-//       search.textContent = recentSearches[i];
-//       search.classList = "button is-fullwidth";
+    // loop through savedSearches array
+    for (var i = 0; i < recentSearches.length; i++) {    
+      //pass each task object into the div
+      var search = document.createElement("button");
+      search.setAttribute("value", recentSearches[i]);
+      search.textContent = recentSearches[i];
+      search.classList = "button is-fullwidth block has-background-grey-lighter";
   
-//       recentSearchesListEl.appendChild(search);
-//       searchHistoryEl.appendChild(recentSearchesListEl);  
-//     }
-//   };
+      recentSearchesListEl.appendChild(search);
+      searchHistoryEl.appendChild(recentSearchesListEl);  
+    }
+};
+
+// make recent searches clickable and display results on page
+$("#item").on("click", "button", function () {
+    var buttonText = $(this).attr("value");
+    console.log(buttonText);
+    getLatLon(buttonText);
+});
 
 searchFormEl.addEventListener("submit", searchHandler);
-// displaySearches(recentSearches);
+
+// display recent searches on page load
+displaySearches();
