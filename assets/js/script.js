@@ -7,11 +7,18 @@ var currentInfoEl = document.querySelector("#current-info");
 var displayForecastEl = document.querySelector("#forecast");
 var forecastHeaderEl = document.querySelector("#forecast-header");
 var forecastCardsEl = document.querySelector("#forecast-cards");
-// var recentSearches = JSON.parse(localStorage.getItem("recentSearches"))?JSON.parse(localStorage.getItem("recentSearches")):[];
+var recentSearches = [];
 
 // search form submission
 var searchHandler = function(event) {
     event.preventDefault();
+
+    if (!currentHeaderEl) {
+        return;
+    } else {
+        currentHeaderEl.innerHTML = "";
+        displayCurrentEl.innerHTML = "";
+    }
 
     // clear old forecast content
     if (!forecastHeaderEl || !forecastCardsEl) {
@@ -20,14 +27,6 @@ var searchHandler = function(event) {
         forecastHeaderEl.textContent = "";
         forecastCardsEl.textContent = "";
     }
-        
-    // // clear old current content
-    // if (!currentHeaderEl) {
-    //     return;
-    // } else {
-    //     currentHeaderEl.textContent = "";
-    //     currentInfoEl.removeChild;
-    // }
     
     // call function to display city name from search input
     if (cityInputEl.value === "" || null) {
@@ -43,7 +42,7 @@ var getInput = function() {
     // get value from form input
     var city = cityInputEl.value.trim();
 
-    // saveSearch(city);
+    saveSearch(city);
 
     // need to add data validation for format of search "city, state, country"
     if (city) {
@@ -136,7 +135,6 @@ var displayCurrentInfo = function(data) {
     icon.innerHTML = "<image src='http://openweathermap.org/img/wn/" + data.current.weather[0].icon + ".png' />";
     $("#current-title").append(icon);
 
-
     // style displayCurrentEl
     displayCurrentEl.setAttribute("class", "box mt-3");
 
@@ -161,21 +159,23 @@ var displayCurrentInfo = function(data) {
     // add UV index to displayCurrentEl
     var uvIndex = document.createElement("p");
     uvIndex.textContent = "UV Index: " + data.current.uvi;
+    uvIndex.setAttribute("id", "uv");
 
-    // // set background based on UV conditions
-    // if (uvIndex.innerHTML < 2) {
-    //     uvIndex.setAttribute("class", "has-background-success");
-    // } else if ((3 >= uvIndex.innerHTML) && (5 <= uvIndex.innerHTML)) {
-    //     uvIndex.setAttribute("class", "has-background-warning");
-    // } else if ((6 >= uvIndex.innerHTML) && (7 <= uvIndex.innerHTML)) {
-    //     uvIndex.setAttribute("class", "has-background-danger");
-    // } else if ((8 >= uvIndex.innerHTML) && (10 <= uvIndex.innerHTML)) {
-    //     uvIndex.setAttribute("class", "has-background-hot-pink");
-    // } else if (uvIndex.innerHTML > 11) {
-    //     uvIndex.setAttribute("class", "has-background-info");
-    // } else {
-    //     return;
-    // }
+    // set background based on UV conditions
+    if (data.current.uvi < 2) {
+        uvIndex.setAttribute("class", "has-background-success");
+    } else if ((3 >= data.current.uvi) && (5 >= data.current.uvi)) {
+        uvIndex.setAttribute("class", "has-background-warning");
+    } 
+    else if ((6 >= data.current.uvi) && (7 >= data.current.uvi)) {
+        uvIndex.setAttribute("class", "has-background-danger");
+    } else if ((8 >= data.current.uvi) && (10 >= data.current.uvi)) {
+        uvIndex.setAttribute("class", "has-background-hot-pink");
+    } else if (data.current.uvi > 11) {
+        uvIndex.setAttribute("class", "has-background-info");
+    } else {
+        return;
+    }
 
     displayCurrentEl.appendChild(uvIndex);
 };
@@ -188,26 +188,26 @@ var displayForecast = function(data) {
 
     // display header
     var colHeader = document.createElement("h2");
-    colHeader.textContent = "8-DAY FORECAST";
+    colHeader.textContent = "5-DAY FORECAST";
     colHeader.setAttribute("class", "title");
     forecastHeaderEl.appendChild(colHeader);
 
-    for (i = 0; i < data.daily.length; i++) {
+    for (i = 1; i < data.daily.length-2; i++) {
         // create container(box)
         var box = document.createElement("div");
         box.setAttribute("class", "daily box m-2");
         forecastCardsEl.appendChild(box);
 
+        // add date to each displayCurrentEl
+        var date = document.createElement("p");
+        var today = moment.unix(data.daily[i].dt).format("MM/DD/YYYY");
+        date.textContent = today;
+        box.appendChild(date);
+
         // add weather icon to header 
         var icon = document.createElement("span");
         icon.innerHTML = "<image src='http://openweathermap.org/img/wn/" + data.daily[i].weather[0].icon + ".png' />";
         box.appendChild(icon);
-
-        // // add date to each displayCurrentEl
-        // var date = document.createElement("p");
-        // var today = moment().format("DD/MM/YYYY");
-        // date.textContent = today.add([i], "days").calendar();
-        // box.appendChild(date);
 
         // add temp to daily forcast boxes
         var temp = document.createElement("p");
@@ -251,20 +251,20 @@ var displayForecast = function(data) {
     }
 };
 
-// // Save recent searches to local storage
-// var saveSearch = function(city) {
-//     var cityStripped = city.replace(/\s*/g, "").toLowerCase();
+// Save recent searches to local storage
+var saveSearch = function(input) {
+    var cityStripped = input.replace(/\s*/g, "").toLowerCase();
 
-//     if (recentSearches.indexOf(recentSearches)=== -1) {
-//         recentSearches.push(cityStripped);
-    
-//         if (recentSearches.length > 10) {
-//             recentSearches.shift();
-//         }
+    if (recentSearches.indexOf(cityStripped)=== -1) {
+        recentSearches.push(cityStripped);
 
-//         localStorage.setItem(recentSearches, cityStripped);
-//     }
-//   };
+        if (recentSearches.length > 10) {
+            recentSearches.shift();
+        }
+  
+        localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+    }
+};
 
 // // display array from local storage
 // var displaySearches = function() {
