@@ -64,7 +64,7 @@ var getLatLon = function(city) {
     displayCityDate(city);
 
     // remove all spaces
-    var cityStripped = city.replace(/\s*/g, "").toLowerCase();
+    var cityStripped = city.toLowerCase();
 
     // geocoding API conversion
     var getCityDetails = "https://api.openweathermap.org/geo/1.0/direct?q=" + cityStripped + "&limit=1&appid=b1880cbaa2479f040cc0422d1ba0e19f";
@@ -260,7 +260,7 @@ var displayForecast = function(data) {
 
 // Save recent searches to local storage
 var saveSearch = function(input) {
-    var cityStripped = input.replace(/\s*/g, "").toLowerCase();
+    var cityStripped = input.toLowerCase();
 
     recentSearches.push(cityStripped);
 
