@@ -9,10 +9,8 @@ var forecastHeaderEl = document.querySelector("#forecast-header");
 var forecastCardsEl = document.querySelector("#forecast-cards");
 var recentSearches = [];
 
-// search form submission
-var searchHandler = function(event) {
-    event.preventDefault();
-
+// clear old data from right column
+var clearData = function() {
     if (!currentHeaderEl) {
         return;
     } else {
@@ -27,12 +25,19 @@ var searchHandler = function(event) {
         forecastHeaderEl.textContent = "";
         forecastCardsEl.textContent = "";
     }
+};
+
+// search form submission
+var searchHandler = function(event) {
+    event.preventDefault();
     
+    clearData();
+
     // call function to display city name from search input
     if (cityInputEl.value === "" || null) {
         return;
     } else {
-        displayCityDate();
+        displayCityDate(cityInputEl.value);
     }
 
     getInput();
@@ -55,6 +60,9 @@ var getInput = function() {
 
 // convert city, state, country to lat/lon
 var getLatLon = function(city) {
+    clearData();
+    displayCityDate(city);
+
     // remove all spaces
     var cityStripped = city.replace(/\s*/g, "").toLowerCase();
 
@@ -104,10 +112,10 @@ var getWeatherData = function(cityDetails) {
 };
 
 // display city name
-var displayCityDate = function() {
+var displayCityDate = function(city) {
     // display city name as h2 within
     var displayCity = document.createElement("h2");
-    displayCity.textContent = cityInputEl.value.toUpperCase() + " ";
+    displayCity.textContent = city.toUpperCase() + " ";
     displayCity.setAttribute("class", "title");
     displayCity.setAttribute("id", "current-title")
     // append city name h2 to currentHeaderEl div
@@ -254,17 +262,17 @@ var displayForecast = function(data) {
 var saveSearch = function(input) {
     var cityStripped = input.replace(/\s*/g, "").toLowerCase();
 
-    if (recentSearches.indexOf(cityStripped)=== -1) {
-        recentSearches.push(cityStripped);
+    recentSearches.push(cityStripped);
 
-        if (recentSearches.length > 10) {
-            recentSearches.shift();
-        }
-  
-        localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
-    }
+    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
 
-    displaySearches();
+    //pass each task object into the div
+    var search = document.createElement("button");
+    search.setAttribute("value", cityStripped);
+    search.textContent = cityStripped;
+    search.classList = "button is-fullwidth block has-background-grey-lighter";
+
+    searchHistoryEl.appendChild(search);
 };
 
 // display array from local storage
@@ -272,33 +280,30 @@ var displaySearches = function() {
     // if there are no searches, set tasks to an empty array and return out of the function
     if (!recentSearches) {
         return false;
-    } else {
-        // add container
-        var recentSearchesListEl = document.createElement("div");
-        recentSearchesListEl.setAttribute("id", "item");
-    }
+    } else { 
+        var saved = JSON.parse(localStorage.getItem("recentSearches"));
 
-    // loop through savedSearches array
-    for (var i = 0; i < recentSearches.length; i++) {    
-      //pass each task object into the div
-      var search = document.createElement("button");
-      search.setAttribute("value", recentSearches[i]);
-      search.textContent = recentSearches[i];
-      search.classList = "button is-fullwidth block has-background-grey-lighter";
-  
-      recentSearchesListEl.appendChild(search);
-      searchHistoryEl.appendChild(recentSearchesListEl);  
+        // loop through savedSearches array
+        for (var i = 0; i < saved.length; i++) {   
+            //pass each task object into the div
+            var search = document.createElement("button");
+            search.setAttribute("value", saved[i]);
+            search.textContent = saved[i];
+            search.classList = "button is-fullwidth block has-background-grey-lighter";
+        
+            searchHistoryEl.appendChild(search); 
+        }
     }
 };
 
 // make recent searches clickable and display results on page
-$("#item").on("click", "button", function () {
+$("#search-history").on("click", "button", function () {
     var buttonText = $(this).attr("value");
-    console.log(buttonText);
     getLatLon(buttonText);
 });
 
-searchFormEl.addEventListener("submit", searchHandler);
+window.onload = function() {
+    displaySearches();
+};
 
-// display recent searches on page load
-displaySearches();
+searchFormEl.addEventListener("submit", searchHandler);
