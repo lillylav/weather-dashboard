@@ -11,8 +11,8 @@ This application can be used to plan your week with weather in mind either for y
 - JQuery
 - Moment.js
 - Open Weather Map Web APIs:
-- - One Call API 
-- - Geocoding API
+-- One Call API 
+-- Geocoding API
 
 ## Screenshot
 <img width="1440" alt="Screen Shot 2022-02-10 at 2 23 12 PM" src="https://user-images.githubusercontent.com/93904532/153499068-326cf56f-cf1d-4703-8d6b-79907930a8a0.png">
