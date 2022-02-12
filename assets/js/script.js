@@ -7,7 +7,7 @@ var currentInfoEl = document.querySelector("#current-info");
 var displayForecastEl = document.querySelector("#forecast");
 var forecastHeaderEl = document.querySelector("#forecast-header");
 var forecastCardsEl = document.querySelector("#forecast-cards");
-var recentSearches = [];
+var recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
 
 // clear old data from right column
 var clearData = function() {
@@ -281,7 +281,7 @@ var displaySearches = function() {
     if (!recentSearches) {
         return false;
     } else { 
-        var saved = JSON.parse(localStorage.getItem("recentSearches"));
+        var saved = recentSearches;
 
         // loop through savedSearches array
         for (var i = 0; i < saved.length; i++) {   
